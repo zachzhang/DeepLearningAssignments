@@ -49,7 +49,7 @@ def train_unsup():
 
         opt.zero_grad()
 
-        X_hat, mu,log_sig , _ = model(data)
+        X_hat, mu,log_sig  = model(data)
 
         recon_loss = mse(X_hat, data)
         kl_loss = 0.5 * torch.mean(torch.exp(log_sig) + mu ** 2 - 1. - log_sig)

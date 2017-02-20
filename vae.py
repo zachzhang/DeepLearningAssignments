@@ -19,7 +19,7 @@ class CVAE(nn.Module):
         super(CVAE, self).__init__()
 
 
-        arc = [64,64,64]
+        arc = [32,32,32]
 
         self.conv1 = nn.Conv2d(1, 16, kernel_size=5 ,stride=2)
         self.conv2 = nn.Conv2d(16, 32, kernel_size=3 ,stride=2)
@@ -144,14 +144,15 @@ class CVAE2(nn.Module):
         self.dconv1 = nn.ConvTranspose2d(arc[2], arc[1], kernel_size=3)
         self.dconv2 = nn.ConvTranspose2d(arc[1], arc[0], kernel_size=5, stride=2 ,output_padding=1)
         self.dconv3 = nn.ConvTranspose2d(arc[0], 1, kernel_size=5, stride=2 ,output_padding=1)
+        
 
-	self.bnf1 = nn.BatchNorm2d(64)
-        self.bnf2 = nn.BatchNorm2d(64)
-        self.bnf3 = nn.BatchNorm2d(64)
+        self.bnf1 = nn.BatchNorm2d(arc[0])
+        self.bnf2 = nn.BatchNorm2d(arc[1])
+        self.bnf3 = nn.BatchNorm2d(arc[2])
 
-        self.bnb1 = nn.BatchNorm2d(64)
-        self.bnb2 = nn.BatchNorm2d(64)
-        self.bnb3 = nn.BatchNorm2d(64)
+        self.bnb1 = nn.BatchNorm2d(arc[2])
+        self.bnb2 = nn.BatchNorm2d(arc[1])
+        self.bnb3 = nn.BatchNorm2d(arc[0])
 
 
     def encode(self ,x):
@@ -172,10 +173,10 @@ class CVAE2(nn.Module):
 
     def decode(self, z):
         x = self.fc2(z)
-
+   
         x = x.view(-1, self.flat_dim[0], self.flat_dim[1], self.flat_dim[2])
-
-	x = F.relu(self.bnb1(x))
+   
+        x = F.relu(self.bnb1(x))
 
         x = F.relu(self.bnb2(self.dconv1(x)))
 
@@ -206,6 +207,6 @@ class CVAE2(nn.Module):
 
 model = CVAE2()
 
-a = model(Variable(torch.randn(64,1,28,28)))[1]
+a = model(Variable(torch.randn(64,1,28,28)))[0]
 
 print(a.size())

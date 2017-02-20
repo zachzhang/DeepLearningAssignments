@@ -118,6 +118,6 @@ def test():
 
 for i in range(40):
 
-    train_unsup()    
+    #train_unsup()    
     train_sup()
     test()
