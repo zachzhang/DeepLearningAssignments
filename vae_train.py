@@ -64,6 +64,9 @@ def test_vae():
     print('Test set: Average loss: {:.4f}\n'.format(test_loss))# , avg_mse.data[0]/count ,avg_kl.data[0]/count)
 
 
+
+
+
 def train_vae():
 
 
@@ -108,6 +111,10 @@ for i in range(20):
 #Supevised CNNtraining
 #----------------------------------------
 
+model.conv1 = vae.conv1
+model.conv2 = vae.conv2
+#model.conv3 = vae.conv3
+
 # CPU only training
 optimizer = optim.Adam(model.parameters(), lr = 0.001)
 
@@ -144,6 +151,6 @@ def test_cnn(epoch):
         test_loss, correct, len(val_loader.dataset),
         100. * correct / len(val_loader.dataset)))
 
-for epoch in range(1, 20):
+for epoch in range(1, 40):
     train_cnn(epoch)
     test_cnn(epoch)

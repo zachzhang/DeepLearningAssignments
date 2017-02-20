@@ -11,7 +11,7 @@ from torch.autograd import Variable
 import pickle
 from swwae import *
 
-model = SWWAE()
+model = DSWWAE()
 
 
 train_labeled = pickle.load(open("train_labeled.p", "rb" ))
@@ -53,7 +53,7 @@ def train_unsup():
         for _h_d, _h_e in zip(h_d, h_e):
             loss += ((_h_d - _h_e) ** 2).mean()
 
-        loss.backward(retain_variables=True)
+        loss.backward()
 
         opt.step()
 
@@ -82,7 +82,7 @@ def train_sup():
         for _h_d, _h_e in zip(h_d, h_e):
             loss += ((_h_d - _h_e) ** 2).mean()
 
-        loss.backward(retain_variables=True)
+        loss.backward()
 
         opt.step()
 
@@ -116,7 +116,7 @@ def test():
         100. * correct / len(val_loader.dataset)))
 
 
-for i in range(10):
+for i in range(40):
 
     train_unsup()    
     train_sup()
