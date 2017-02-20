@@ -214,9 +214,115 @@ class CVAE2(nn.Module):
         return (self.decode(z))
 
 
-model = CVAE2()
+class CVAE2_Pool(nn.Module):
+    def __init__(self):
+        super(CVAE2_Pool, self).__init__()
 
-print(model.get_flat_dim())
+        arc = [32, 32, 32]
+
+        self.bnf1 = nn.BatchNorm2d(arc[0])
+        self.bnf2 = nn.BatchNorm2d(arc[1])
+        self.bnf3 = nn.BatchNorm2d(arc[2])
+
+        self.bnb1 = nn.BatchNorm2d(arc[2])
+        self.bnb2 = nn.BatchNorm2d(arc[1])
+        self.bnb3 = nn.BatchNorm2d(arc[0])
+
+        self.poolf1 = nn.MaxPool2d(2,return_indices=True)
+        self.poolf2 = nn.MaxPool2d(2,return_indices=True)
+        self.poolf3 = nn.MaxPool2d(2,return_indices=True)
+
+        self.unpool1 = nn.MaxUnpool2d(2)
+        self.unpool2 = nn.MaxUnpool2d(2)
+        self.unpool3 = nn.MaxUnpool2d(2)
+
+
+        self.conv1 = nn.Conv2d(1, arc[0], kernel_size=5)
+        self.conv2 = nn.Conv2d(arc[0], arc[1], kernel_size=3)
+        self.conv3 = nn.Conv2d(arc[1], arc[2], kernel_size=3)
+
+        self.flat_dim = self.get_flat_dim()
+
+        self.h = self.flat_dim[0] * self.flat_dim[1] * self.flat_dim[2]
+
+        self.latent_vars = 10
+
+        self.fc1 = nn.Linear(self.h, self.latent_vars * 2)
+
+        self.fc2 = nn.Linear(self.latent_vars, self.h)
+
+        self.dconv1 = nn.ConvTranspose2d(arc[2], arc[1], kernel_size=3)
+        self.dconv2 = nn.ConvTranspose2d(arc[1], arc[0], kernel_size=3)
+        self.dconv3 = nn.ConvTranspose2d(arc[0], 1, kernel_size=5)
+
+    def get_flat_dim(self):
+        x = Variable(torch.randn(64, 1, 28, 28))
+        x = F.relu(F.max_pool2d( self.bnf1(self.conv1(x)) , 2))
+        x = F.relu(F.max_pool2d(self.bnf2(self.conv2(x)), 2))
+        x = F.relu(F.max_pool2d(self.bnf3(self.conv3(x)), 2))
+
+        return (x.size()[1:])
+
+    def encode(self, x):
+
+        x,id1 = self.poolf1(F.relu(self.bnf1(self.conv1(x))))
+        x, id2 = self.poolf2(F.relu(self.bnf2(self.conv2(x))))
+        x, id3 = self.poolf3(F.relu(self.bnf3(self.conv3(x))))
+
+
+        x = x.view(-1, x.size()[1] * x.size()[2] * x.size()[3])
+        z = self.fc1(x)
+
+        mu = z[:, 0:self.latent_vars]
+        log_sig = z[:, self.latent_vars:]
+
+        return mu, log_sig , [id1,id2,id3]
+
+    def decode(self, z , ids):
+
+        x = self.fc2(z)
+
+        x = x.view(-1, self.flat_dim[0], self.flat_dim[1], self.flat_dim[2])
+
+        x = F.relu(self.bnb1(x))
+
+        x = self.unpool1(x,ids[2] , output_size=torch.Size([64, 32, 3, 3]))
+
+        x = F.relu(self.bnb2(self.dconv1(x)))
+
+        x = self.unpool2(x,ids[1] , output_size=torch.Size([64, 32, 10, 10]))
+
+        x = F.relu(self.bnb3(self.dconv2(x)))
+
+        x = self.unpool3(x,ids[0] , output_size=torch.Size([64, 32, 24, 24]))
+
+        x = self.dconv3(x)
+
+        # x = F.sigmoid(x)
+        return (x)
+
+    def forward(self, x):
+        mu, log_sig , ids = self.encode(x)
+
+        eps = Variable(torch.randn(log_sig.size()))
+
+        z = mu + torch.exp(log_sig / 2) * eps
+
+        x_hat = self.decode(z,ids)
+
+        return (x_hat, mu, log_sig)
+
+    def sample(self, n):
+        z = Variable(torch.randn((n, self.latent_vars)))
+        return (self.decode(z))
+
+model = CVAE2_Pool()
+#model.encode(Variable(torch.randn(64,1,28,28)))
+
+model.forward(Variable(torch.randn(64,1,28,28)))
+#model.encode(Variable(torch.randn(64,1,28,28)))
+
+#print(model.get_flat_dim())
 
 #a = model(Variable(torch.randn(64,1,28,28)))[0]
 

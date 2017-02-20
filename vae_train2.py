@@ -32,7 +32,7 @@ val_loader = torch.utils.data.DataLoader(val_data, batch_size=64, shuffle=True)
 #test_loader = torch.utils.data.DataLoader(test_data, batch_size=64, shuffle=True)
 
 
-model = CVAE2()
+model = CVAE2_Pool()
 
 opt = optim.Adam(model.parameters(), lr=0.001)
 
@@ -132,10 +132,6 @@ def test():
         test_loss, correct, len(val_loader.dataset),
         100. * correct / len(val_loader.dataset)))
 
-
-for i in range(3):
-
-    train_unsup()
 
 for i in range(40):
 
