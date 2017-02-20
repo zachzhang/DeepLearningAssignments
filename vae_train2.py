@@ -125,7 +125,7 @@ def test():
         100. * correct / len(val_loader.dataset)))
 
 
-for i in range(10):
+for i in range(20):
 
     train_unsup()
     train_sup()
