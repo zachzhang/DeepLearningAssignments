@@ -9,130 +9,25 @@ import torch.optim as optim
 from torchvision import datasets, transforms
 from torch.autograd import Variable
 import pickle
-
-
-class SWWAE(nn.Module):
-    def __init__(self):
-        super(SWWAE, self).__init__()
-
-        self.conv1 = nn.Conv2d(1, 64, kernel_size=5, stride=2)
-        self.conv2 = nn.Conv2d(64, 64, kernel_size=3, stride=2)
-        self.conv3 = nn.Conv2d(64, 64, kernel_size=3, stride=2)
-
-        self.flat_dim = [32, 4, 4]
-        self.flat_dim = [64, 2, 2]
-
-        self.h = self.flat_dim[0] * self.flat_dim[1] * self.flat_dim[2]
-
-        self.latent_vars = 10
-
-        self.fc1 = nn.Linear(self.h, self.latent_vars)
-
-        self.fc2 = nn.Linear(self.latent_vars, self.h)
-
-        self.dconv1 = nn.ConvTranspose2d(64, 64, kernel_size=3, stride=2)
-        self.dconv2 = nn.ConvTranspose2d(64, 64, kernel_size=3, stride=2, output_padding=1)
-        self.dconv3 = nn.ConvTranspose2d(64, 1, kernel_size=5, stride=2, output_padding=1)
-
-        self.fc_out = nn.Linear(self.latent_vars, 10)
-        self.fc4 = nn.Linear(10, self.latent_vars)
-
-        self.bnf1 = nn.BatchNorm2d(64)
-        self.bnf2 = nn.BatchNorm2d(64)
-        self.bnf3 = nn.BatchNorm2d(64)
-
-        self.bnb1 = nn.BatchNorm2d(64)
-        self.bnb2 = nn.BatchNorm2d(64)
-        self.bnb3 = nn.BatchNorm2d(64)
-
-    def encode(self, x):
-        h = []
-
-        h.append(F.relu(self.bnf1(self.conv1(x))))
-
-        h.append(F.relu(self.bnf2(self.conv2(h[0]))))
-
-        h.append(self.bnf3(F.relu(self.conv3(h[1]))))
-
-        z = self.fc1(h[2].view(-1, h[-1].size()[1] * h[-1].size()[2] * h[-1].size()[3]))
-
-        '''
-        h = []
-
-        h.append(F.relu(self.conv1(x)))
-
-        h.append(F.relu(self.conv2(h[0])))
-
-        h.append(F.relu(self.conv3(h[1])))
-
-        z = self.fc1(h[2].view(-1, h[-1].size()[1] *h[-1].size()[2] *h[-1].size()[3]))
-        '''
-
-        return h, z
-
-    def decode(self, z):
-        h = []
-
-        h.append(F.relu(self.bnb1(self.fc2(z).view(-1, self.flat_dim[0], self.flat_dim[1], self.flat_dim[2]))))
-
-        h.append(F.relu(self.bnb2(self.dconv1(h[-1]))))
-
-        h.append(F.relu(self.bnb3(self.dconv2(h[-1]))))
-
-        x = self.dconv3(h[-1])
-
-        '''
-        h = []
-
-        h.append(F.relu(self.fc2(z)).view(-1,self.flat_dim[0], self.flat_dim[1], self.flat_dim[2]))
-
-        h.append( F.relu(self.dconv1(h[-1]))  )
-
-        h.append(F.relu(self.dconv2(h[-1])))
-
-        x = self.dconv3(h[-1])
-        '''
-
-        h.reverse()
-
-        return (h, x)
-
-    def forward(self, x):
-        h, z = self.encode(x)
-        h_d, x_hat = self.decode(z)
-        y_hat = F.log_softmax(z)
-
-        return (x_hat, y_hat, h_d, h)
-
-    def test(self, x):
-        x = self.conv1(x)
-        x = self.conv2(x)
-
-
-model = SWWAE()
-
-a = model(Variable(torch.randn(64, 1, 28, 28)))[0]
-
+from swwae import *
 
 model = SWWAE()
 
 
 train_labeled = pickle.load(open("train_labeled.p", "rb" ))
 train_unlabeled = pickle.load(open("train_unlabeled.p", "rb" ))
-train_unlabeled.train_labels = torch.ones([57000])
+train_unlabeled.train_labels = torch.ones([47000])
+train_unlabeled.k = 47000
+val_data = pickle.load(open("validation.p","rb"))
+#test_data = pickle.load(open("test.p","rb"))
 
-train_unlabeled.k = 20000
 
-train_loader_unlabeled = torch.utils.data.DataLoader(train_unlabeled, batch_size=32, shuffle=True)
+train_loader_unlabeled = torch.utils.data.DataLoader(train_unlabeled, batch_size=64, shuffle=True)
+train_loader_labeled = torch.utils.data.DataLoader(train_labeled, batch_size=64, shuffle=True)
+val_loader = torch.utils.data.DataLoader(val_data, batch_size=64, shuffle=True)
+#test_loader = torch.utils.data.DataLoader(test_data, batch_size=64, shuffle=True)
 
-train_loader_labeled = torch.utils.data.DataLoader(train_labeled, batch_size=32, shuffle=True)
 
-test_loader = torch.utils.data.DataLoader(
-    datasets.MNIST('../data', train=False, transform=transforms.Compose([
-                       transforms.ToTensor(),
-                       transforms.Normalize((0.1307,), (0.3081,))
-                   ])),
-    batch_size=32, shuffle=False)
 
 opt = optim.Adam(model.parameters(), lr=0.001)
 
@@ -203,7 +98,7 @@ def test():
     test_loss = 0
     correct = 0
 
-    for data, target in test_loader:
+    for data, target in val_loader:
         data, target = Variable(data, volatile=True), Variable(target)
 
         X_hat, y_hat, _, _ = model(data)
@@ -215,22 +110,14 @@ def test():
         pred = y_hat.data.max(1)[1]
         correct += pred.eq(target.data).cpu().sum()
 
-    test_loss /= len(test_loader)
+    test_loss /= len(val_loader)
     print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
-        test_loss, correct, len(test_loader.dataset),
-        100. * correct / len(test_loader.dataset)))
+        test_loss, correct, len(val_loader.dataset),
+        100. * correct / len(val_loader.dataset)))
 
 
-eps = .0001
-cont = True
-prev_error = 10e10
-
-while cont:
+for i in range(10):
 
     train_unsup()    
     train_sup()
-    test()
-
-    #train_sup()
-
     test()
