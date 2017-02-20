@@ -32,7 +32,7 @@ val_loader = torch.utils.data.DataLoader(val_data, batch_size=64, shuffle=True)
 #test_loader = torch.utils.data.DataLoader(test_data, batch_size=64, shuffle=True)
 
 
-model = CVAE2_Pool()
+model = DCVAE2_Pool()
 
 opt = optim.Adam(model.parameters(), lr=0.001)
 
