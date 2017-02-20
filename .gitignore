@@ -3,3 +3,5 @@
 *.txt
 *.pyc
 *.ipynb
+*.pyc
+*.out
