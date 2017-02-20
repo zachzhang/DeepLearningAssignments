@@ -133,9 +133,16 @@ def test():
         100. * correct / len(val_loader.dataset)))
 
 
-for i in range(40):
-
-    #train_unsup()
+for i in range(20):
 
     train_sup()
     test()
+
+#fine tuning at end with no unsupervised cost
+C = 0.
+
+for i in range(4):
+
+    train_sup()
+    test()
+
