@@ -120,18 +120,27 @@ class CNN(nn.Module):
 
 
 class CVAE2(nn.Module):
+
     def __init__(self):
+
         super(CVAE2, self).__init__()
 
+        arc = [32,32,32]
 
-        arc = [64,64,64]
+        self.bnf1 = nn.BatchNorm2d(arc[0])
+        self.bnf2 = nn.BatchNorm2d(arc[1])
+        self.bnf3 = nn.BatchNorm2d(arc[2])
+
+        self.bnb1 = nn.BatchNorm2d(arc[2])
+        self.bnb2 = nn.BatchNorm2d(arc[1])
+        self.bnb3 = nn.BatchNorm2d(arc[0])
+
 
         self.conv1 = nn.Conv2d(1, arc[0], kernel_size=5 ,stride=2)
         self.conv2 = nn.Conv2d(arc[0], arc[1], kernel_size=5 ,stride=2)
         self.conv3 = nn.Conv2d(arc[1], arc[2], kernel_size=3)
 
-        self.flat_dim = [32 ,4 ,4]
-        self.flat_dim = [64 ,2 ,2]
+        self.flat_dim = self.get_flat_dim()
 
         self.h = self.flat_dim[0 ] *self.flat_dim[1 ] *self.flat_dim[2]
 
@@ -146,13 +155,14 @@ class CVAE2(nn.Module):
         self.dconv3 = nn.ConvTranspose2d(arc[0], 1, kernel_size=5, stride=2 ,output_padding=1)
         
 
-        self.bnf1 = nn.BatchNorm2d(arc[0])
-        self.bnf2 = nn.BatchNorm2d(arc[1])
-        self.bnf3 = nn.BatchNorm2d(arc[2])
+    def get_flat_dim(self):
 
-        self.bnb1 = nn.BatchNorm2d(arc[2])
-        self.bnb2 = nn.BatchNorm2d(arc[1])
-        self.bnb3 = nn.BatchNorm2d(arc[0])
+        x = Variable(torch.randn(64,1,28,28))
+        x = F.relu(self.bnf1(self.conv1(x)))
+        x = F.relu(self.bnf2(self.conv2(x)))
+        x = F.relu(self.bnf3(self.conv3(x)))
+
+        return(x.size()[1:])
 
 
     def encode(self ,x):
@@ -201,12 +211,14 @@ class CVAE2(nn.Module):
     def sample(self, n):
 
         z = Variable(torch.randn((n, self.latent_vars)))
-
         return (self.decode(z))
 
 
 model = CVAE2()
 
-a = model(Variable(torch.randn(64,1,28,28)))[0]
+print(model.get_flat_dim())
 
-print(a.size())
+#a = model(Variable(torch.randn(64,1,28,28)))[0]
+
+#print(a.size())
+

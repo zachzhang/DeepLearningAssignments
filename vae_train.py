@@ -64,9 +64,6 @@ def test_vae():
     print('Test set: Average loss: {:.4f}\n'.format(test_loss))# , avg_mse.data[0]/count ,avg_kl.data[0]/count)
 
 
-
-
-
 def train_vae():
 
 

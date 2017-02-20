@@ -143,7 +143,7 @@ class DSWWAE(nn.Module):
         self.bnb2 = nn.BatchNorm2d(64)
         self.bnb3 = nn.BatchNorm2d(64)
 
-        self.noise_std = .2
+        self.noise_std = .8
 
     def encode(self, x, noise=False):
 

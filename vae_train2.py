@@ -15,6 +15,8 @@ import matplotlib.pyplot as plt
 from vae import *
 
 
+print("VAE")
+
 
 train_labeled = pickle.load(open("train_labeled.p", "rb" ))
 train_unlabeled = pickle.load(open("train_unlabeled.p", "rb" ))
@@ -43,6 +45,7 @@ def train_unsup():
     avg_loss = 0
     count = 0
 
+    model.train()
     for batch_idx, (data, target) in enumerate(train_loader_unlabeled):
 
         data, target = Variable(data), Variable(target)
@@ -68,9 +71,12 @@ def train_unsup():
 
 def train_sup():
 
+
     avg_loss = 0
     count = 0
     avg_forward_loss = 0
+
+    model.train()
 
     for batch_idx, (data, target) in enumerate(train_loader_labeled):
 
@@ -105,6 +111,8 @@ def test():
     test_loss = 0
     correct = 0
 
+    model.eval()
+
     for data, target in val_loader:
         data, target = Variable(data, volatile=True), Variable(target)
 
@@ -125,8 +133,13 @@ def test():
         100. * correct / len(val_loader.dataset)))
 
 
-for i in range(20):
+for i in range(3):
 
     train_unsup()
+
+for i in range(40):
+
+    #train_unsup()
+
     train_sup()
     test()
