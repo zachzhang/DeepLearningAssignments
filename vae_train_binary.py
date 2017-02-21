@@ -39,6 +39,7 @@ opt = optim.Adam(model.parameters(), lr=0.001)
 nll = torch.nn.NLLLoss()
 mse = torch.nn.MSELoss()
 
+
 C = 1
 
 def train_unsup():
@@ -48,13 +49,17 @@ def train_unsup():
     model.train()
     for batch_idx, (data, target) in enumerate(train_loader_unlabeled):
 
+        data = (data > 0).float()
+
         data, target = Variable(data), Variable(target)
 
         opt.zero_grad()
 
         X_hat, mu,log_sig  = model(data)
 
-        recon_loss = mse(X_hat, data)
+        #recon_loss = mse(X_hat, data)
+        recon_loss = F.binary_cross_entropy(F.sigmoid(X_hat) , data)
+
         kl_loss = 0.5 * torch.mean(torch.exp(log_sig) + mu ** 2 - 1. - log_sig)
 
         loss = (recon_loss + kl_loss) * C
@@ -80,13 +85,17 @@ def train_sup():
 
     for batch_idx, (data, target) in enumerate(train_loader_labeled):
 
+        data = (data > 0).float()
+
         data, target = Variable(data), Variable(target)
 
         opt.zero_grad()
 
         X_hat, mu, log_sig  = model(data)
 
-        recon_loss = mse(X_hat, data)
+        #recon_loss = mse(X_hat, data)
+        recon_loss = F.binary_cross_entropy(F.sigmoid(X_hat) , data)
+
         kl_loss = 0.5 * torch.mean(torch.exp(log_sig) + mu ** 2 - 1. - log_sig)
 
         y_hat = F.log_softmax(mu)
@@ -107,22 +116,15 @@ def train_sup():
           (avg_forward_loss / count).data[0])
 
 
-def test(record = False):
-
+def test():
     test_loss = 0
     correct = 0
 
-    right = []
-    predicted = []
-    image = []
-    recon_image =[]
-
     model.eval()
-
-    z = 0
 
     for data, target in val_loader:
 
+        data = (data > 0).float()
 
         data, target = Variable(data, volatile=True), Variable(target)
 
@@ -137,45 +139,16 @@ def test(record = False):
         pred = y_hat.data.max(1)[1]
         correct += pred.eq(target.data).cpu().sum()
 
-        if record == True:
-
-            #predicted = predicted + list(pred)
-            #right = right + list(target.data)
-
-            eq = pred.eq(target.data).cpu()
-
-            for i in range(len(list(pred))):
-
-
-                if eq[i] == 0 :
-                    
-                    right.append(target.data[i])
-                    predicted.append(pred[i])
-                    image.append(data.data[i])
-                    recon_image.append(X_hat.data[i])
-
-        z += 1
-
     test_loss /= len(val_loader)
     print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
         test_loss, correct, len(val_loader.dataset),
         100. * correct / len(val_loader.dataset)))
-    
-    return predicted,right,image,recon_image
+
 
 for i in range(40):
 
     train_sup()
-   
-   
-predicted,right,image,recon_image = test(True)
-
-
-pickle.dump(predicted,open('predicted.p','wb'))
-pickle.dump(right,open('right.p','wb'))
-pickle.dump(image,open('X_test.p','wb'))
-pickle.dump(recon_image,open('X_hat.p','wb'))
-
+    test()
 
 
 

@@ -218,7 +218,8 @@ class CVAE2_Pool(nn.Module):
     def __init__(self):
         super(CVAE2_Pool, self).__init__()
 
-        arc = [32, 32, 32]
+        arc = [64, 128, 128]
+        self.arc = arc
 
         self.bnf1 = nn.BatchNorm2d(arc[0])
         self.bnf2 = nn.BatchNorm2d(arc[1])
@@ -286,15 +287,15 @@ class CVAE2_Pool(nn.Module):
 
         x = F.relu(self.bnb1(x))
 
-        x = self.unpool1(x,ids[2] , output_size=torch.Size([64, 32, 3, 3]))
+        x = self.unpool1(x,ids[2] , output_size=torch.Size([64, self.arc[2], 3, 3]))
 
         x = F.relu(self.bnb2(self.dconv1(x)))
 
-        x = self.unpool2(x,ids[1] , output_size=torch.Size([64, 32, 10, 10]))
+        x = self.unpool2(x,ids[1] , output_size=torch.Size([64, self.arc[1], 10, 10]))
 
         x = F.relu(self.bnb3(self.dconv2(x)))
 
-        x = self.unpool3(x,ids[0] , output_size=torch.Size([64, 32, 24, 24]))
+        x = self.unpool3(x,ids[0] , output_size=torch.Size([64, self.arc[0], 24, 24]))
 
         x = self.dconv3(x)
 
@@ -321,7 +322,7 @@ class DCVAE2_Pool(nn.Module):
     def __init__(self):
         super(DCVAE2_Pool, self).__init__()
 
-        arc = [32, 32, 32]
+        arc = [64, 128, 128]
 
         self.bnf1 = nn.BatchNorm2d(arc[0])
         self.bnf2 = nn.BatchNorm2d(arc[1])
@@ -358,7 +359,7 @@ class DCVAE2_Pool(nn.Module):
         self.dconv2 = nn.ConvTranspose2d(arc[1], arc[0], kernel_size=3)
         self.dconv3 = nn.ConvTranspose2d(arc[0], 1, kernel_size=5)
 
-        self.noise_std = .2
+        self.noise_std = 0
 
 
     def get_flat_dim(self):

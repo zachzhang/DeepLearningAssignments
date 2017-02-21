@@ -142,12 +142,9 @@ def test(record = False):
             #predicted = predicted + list(pred)
             #right = right + list(target.data)
 
-            eq = pred.eq(target.data).cpu()
-
             for i in range(len(list(pred))):
 
-
-                if eq[i] == 0 :
+                if pred[i] != target.data[i]:
                     
                     right.append(target.data[i])
                     predicted.append(pred[i])
@@ -163,11 +160,18 @@ def test(record = False):
     
     return predicted,right,image,recon_image
 
-for i in range(40):
+for i in range(20):
 
     train_sup()
+
+
+for i in range(20):
+    
+    train_sup()
+
+    test()
    
-   
+'''
 predicted,right,image,recon_image = test(True)
 
 
@@ -175,7 +179,7 @@ pickle.dump(predicted,open('predicted.p','wb'))
 pickle.dump(right,open('right.p','wb'))
 pickle.dump(image,open('X_test.p','wb'))
 pickle.dump(recon_image,open('X_hat.p','wb'))
-
+'''
 
 
 
