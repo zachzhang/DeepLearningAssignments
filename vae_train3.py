@@ -34,10 +34,10 @@ test_loader = torch.utils.data.DataLoader(test_data, batch_size=64, shuffle=Fals
 if len(sys.argv ) > 1:
 
     unsup_cost = float(sys.argv[1])
+    m_cost = float(sys.argv[1])
 
-    print(unsup_cost)
-
-model = DCVAE2_Pool_Deeper(cost_rec = unsup_cost)
+#model = DCVAE2_Pool_Deeper(cost_rec = unsup_cost)
+model = DCVAE2_Pool_Deeper_Ladder(unsup_cost,m_cost)
 
 
 opt = optim.Adam(model.parameters(), lr=0.001)
@@ -45,10 +45,7 @@ opt = optim.Adam(model.parameters(), lr=0.001)
 nll = torch.nn.NLLLoss()
 mse = torch.nn.MSELoss()
 
-
-
 C = 1
-
 
 def train_unsup():
     avg_loss = 0

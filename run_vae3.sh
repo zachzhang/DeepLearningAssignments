@@ -11,10 +11,11 @@ module load pytorch/intel/20170125
 
 cd /home/zz1409/DeepLearningAssignments
 
-##python vae_train3.py 0.
-##python vae_train3.py .2
-##python vae_train3.py .5
-##python vae_train3.py 1.
+python vae_train3.py 1. 0.
+python vae_train3.py 1. .01
+python vae_train3.py 1. .1
+python vae_train3.py 1. .5
 
-python vae_train3.py 1.
+
+##python vae_train3.py 1.
 
