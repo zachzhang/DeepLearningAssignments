@@ -433,9 +433,11 @@ class DCVAE2_Pool(nn.Module):
 
 
 class DCVAE2_Pool_Deeper(nn.Module):
-    def __init__(self):
+    def __init__(self,cost_rec = 1.):
+
         super(DCVAE2_Pool_Deeper, self).__init__()
 
+        self.cost_rec = cost_rec
         self.arc =[]
         arc = [32 , 64, 64, 128]
 
@@ -575,9 +577,19 @@ class DCVAE2_Pool_Deeper(nn.Module):
 
         recon_loss =  ((x_hat - x)**2).mean()
 
-        loss = class_loss + recon_loss
+        loss = class_loss + recon_loss * self.cost_rec
 
         return(loss)
+
+
+    def unsup_cost(self, x):
+
+        x_hat, mu, log_sig = self.forward(x)
+
+        recon_loss =  ((x_hat - x)**2).mean() * self.cost_rec
+
+        return(recon_loss)
+
 
     def predict(self,x):
 
@@ -591,8 +603,12 @@ class DCVAE2_Pool_Deeper(nn.Module):
 
 
 class DCVAE2_Pool_Deeper_Ladder(nn.Module):
-    def __init__(self):
+    def __init__(self, cost_rec = 1., cost_m = .1):
+
         super(DCVAE2_Pool_Deeper_Ladder, self).__init__()
+
+        self.cost_rec = cost_rec
+        self.cost_m = cost_m
 
         self.arc =[]
         arc = [32 , 64, 64, 128]
@@ -744,7 +760,7 @@ class DCVAE2_Pool_Deeper_Ladder(nn.Module):
         for h_d, h_e in zip(h_decode, h_encode):
             h_loss += ((h_d - h_e) ** 2).mean()
 
-        loss = class_loss + recon_loss + .1 *h_loss
+        loss = class_loss + self.cost_rec * recon_loss + self.cost_m *h_loss
 
         return(loss)
 

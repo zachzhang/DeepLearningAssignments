@@ -11,8 +11,9 @@ from torch.autograd import Variable
 import pickle
 import torchvision
 import matplotlib.pyplot as plt
-
+import sys
 from vae import *
+import pandas as pd
 
 print("VAE")
 
@@ -21,21 +22,30 @@ train_unlabeled = pickle.load(open("train_unlabeled.p", "rb"))
 train_unlabeled.train_labels = torch.ones([47000])
 train_unlabeled.k = 47000
 val_data = pickle.load(open("validation.p", "rb"))
-# test_data = pickle.load(open("test.p","rb"))
+test_data = pickle.load(open("test.p","rb"))
 
 
 train_loader_unlabeled = torch.utils.data.DataLoader(train_unlabeled, batch_size=64, shuffle=True)
 train_loader_labeled = torch.utils.data.DataLoader(train_labeled, batch_size=64, shuffle=True)
 val_loader = torch.utils.data.DataLoader(val_data, batch_size=64, shuffle=True)
-# test_loader = torch.utils.data.DataLoader(test_data, batch_size=64, shuffle=True)
+test_loader = torch.utils.data.DataLoader(test_data, batch_size=64, shuffle=False)
 
 
-model = DCVAE2_Pool_Deeper_Ladder()
+if len(sys.argv ) > 1:
+
+    unsup_cost = float(sys.argv[1])
+
+    print(unsup_cost)
+
+model = DCVAE2_Pool_Deeper(cost_rec = unsup_cost)
+
 
 opt = optim.Adam(model.parameters(), lr=0.001)
 
 nll = torch.nn.NLLLoss()
 mse = torch.nn.MSELoss()
+
+
 
 C = 1
 
@@ -50,12 +60,7 @@ def train_unsup():
 
         opt.zero_grad()
 
-        X_hat, mu, log_sig = model(data)
-
-        recon_loss = mse(X_hat, data)
-        kl_loss = 0.5 * torch.mean(torch.exp(log_sig) + mu ** 2 - 1. - log_sig)
-
-        loss = (recon_loss + kl_loss) * C
+        loss = model.unsup_cost(data)
 
         loss.backward()
 
@@ -139,14 +144,51 @@ def test(record=False):
         test_loss, correct, len(val_loader.dataset),
         100. * correct / len(val_loader.dataset)))
 
-    return predicted, right, image, recon_image
+    #return predicted, right, image, recon_image
+    return 100. * correct / len(val_loader.dataset)
 
 
-for i in range(40):
+def predict_test_data():
+
+    label_predict = np.array([])
+    
+    model.eval()
+
+    for data, target in test_loader:
+    
+        data, target = Variable(data, volatile=True), Variable(target)
+        
+        output = model.predict(data)
+
+        temp = output.data.max(1)[1].numpy().reshape(-1)
+        
+        label_predict = np.concatenate((label_predict, temp))
+
+
+    predict_label = pd.DataFrame(label_predict, columns=['label'], dtype=int)
+    predict_label.reset_index(inplace=True)
+    predict_label.rename(columns={'index': 'ID'}, inplace=True)
+
+    predict_label.to_csv('submission.csv', index=False)
+
+
+num_right = []
+
+for i in range(30):
+    
+    #train_unsup()
+
     train_sup()
-    test()
+
+    if i > 20:
+
+        num_right.append(test())
 
 
+print("AVERAGE TESTING ACCURACY:")
+print(np.array(num_right).mean() )
+
+predict_test_data()
 
 
 
