@@ -15,7 +15,7 @@ import pandas as pd
 
 train_labeled = pickle.load(open("train_labeled.p", "rb"))
 train_unlabeled = pickle.load(open("train_unlabeled.p", "rb"))
-train_unlabeled.train_labels = torch.ones([47000])
+train_unlabeled.train_labels = torch.ones([47000]).long()
 train_unlabeled.k = 47000
 val_data = pickle.load(open("validation.p", "rb"))
 test_data = pickle.load(open("test.p","rb"))
@@ -58,12 +58,19 @@ def train_semi_sup():
 
     for batch_idx, (data, target) in enumerate(train_loader_unlabeled):
 
+
         data_sup, target_sup = next(sup_iter, [None, None])
 
         if data_sup is not torch.FloatTensor:
             sup_iter = iter(train_loader_labeled)
 
             data_sup, target_sup = next(sup_iter, [None, None])
+
+        data = data.view(data.size()[0], 28 * 28)
+        data_sup = data_sup.view(data_sup.size()[0], 28 * 28)
+
+        data,target = Variable(data) , Variable(target)
+        data_sup , target_sup = Variable(data_sup) , Variable(target_sup)
 
         opt.zero_grad()
 
@@ -162,6 +169,8 @@ def predict_test_data():
     model.eval()
 
     for data, target in test_loader:
+
+        data = data.view(data.size()[0], 28 * 28)
         data, target = Variable(data, volatile=True), Variable(target)
 
         output = model.predict(data)
@@ -177,7 +186,7 @@ def predict_test_data():
     predict_label.to_csv('submission_ladder.csv', index=False)
 
 
-for i in range(5):
+for i in range(15):
 
     train_semi_sup()
     test()
