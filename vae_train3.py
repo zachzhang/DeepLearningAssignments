@@ -171,13 +171,13 @@ def predict_test_data():
 
 num_right = []
 
-for i in range(30):
+for i in range(50):
     
     #train_unsup()
 
     train_sup()
 
-    if i > 20:
+    if i > 40:
 
         num_right.append(test())
 
