@@ -764,6 +764,23 @@ class DCVAE2_Pool_Deeper_Ladder(nn.Module):
 
         return(loss)
 
+    def cost_unsup(self, x):
+
+        x_hat, mu, log_sig, h_decode, h_encode = self.forward(x)
+
+        y_hat = F.log_softmax(mu)
+
+        recon_loss =  ((x_hat - x)**2).mean()
+
+        h_loss = Variable(torch.zeros(1))
+
+        for h_d, h_e in zip(h_decode, h_encode):
+            h_loss += ((h_d - h_e) ** 2).mean()
+
+        loss = self.cost_rec * recon_loss + self.cost_m *h_loss
+
+        return(loss)
+
 
     def predict(self,x):
 
