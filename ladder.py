@@ -94,6 +94,59 @@ class LadderNet(nn.Module):
 
         return h[-1]
 
+    def forward2(self, x):
+
+        h_noise = [x + self.noise_std *Variable(torch.randn(x.size()))]
+        z_noise = [h_noise[0]]
+        z = [x]
+        h = [x]
+
+        # forward pass
+        for i in range(len(self.layer_sizes) - 1):
+
+            z_pre = self.modules[i](h[i])
+            z_pre_noise = self.modules[i](h_noise[i])
+
+            z_bn = self.bn_layers_forward[i + 1](z_pre)
+            z_bn_noise = self.bn_layers_forward[i + 1](z_pre_noise)
+
+            z.append(z_bn)
+            z_noise.append(z_bn_noise + self.noise_std * Variable(torch.randn(z_pre_noise.size())))
+
+            if i == (len(self.layer_sizes) - 2):
+                h_noise.append(F.log_softmax(z_noise[i + 1]))
+                h.append(F.log_softmax(z[i + 1]))
+            else:
+                h_noise.append(F.relu(z_noise[i + 1]))
+                h.append(F.relu(z[i + 1]))
+
+        # decoder
+        j = 0
+        u = []
+        z_hat_bn = []
+
+        for i in range(len(self.layer_sizes) - 1, -1, -1):
+
+            if i == (len(self.layer_sizes) - 1):
+                bn,_,_ = self.batch_norm( h_noise[-1])
+                #bn = self.bn_layers_backward[i](h_noise[-1])
+            else:
+                bn, _, _ = self.batch_norm(self.decoder_modules[i](z_hat))
+                #bn = self.bn_layers_backward[i](self.decoder_modules[i](z_hat))
+
+            u.append(bn)
+
+            z_hat = self.g_gauss(z_noise[i], u[j], i)
+
+            z_hat_bn.append(z_hat)
+
+            j += 1
+
+        z_hat_bn.reverse()
+
+        return (z_hat_bn, z, h_noise[-1])
+
+
     def forward(self, x):
 
         h_noise = [x + self.noise_std *Variable(torch.randn(x.size()))]

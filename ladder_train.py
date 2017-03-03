@@ -74,7 +74,7 @@ def train_semi_sup():
 
         opt.zero_grad()
 
-        z_hat_bn, z, y_hat = model(data_sup)
+        z_hat_bn, z, y_hat = model.forward2(data_sup)
 
         C_denoise, C_forward = model.cost(z_hat_bn, z, y_hat, target_sup)
 
@@ -86,7 +86,7 @@ def train_semi_sup():
 
         opt.zero_grad()
 
-        z_hat_bn, z, y_hat = model(data)
+        z_hat_bn, z, y_hat = model.forward2(data)
         C_denoise, _ = model.cost(z_hat_bn, z, y_hat, target)
 
         unsup_loss = C_denoise
@@ -110,6 +110,7 @@ def train():
     avg_forward_loss = 0
 
     for batch_idx, (data, target) in enumerate(train_loader_labeled):
+    #for data, target in train_loader_labeled[0:10]:
 
         data = data.view(data.size()[0], 28 * 28)
         mask = Variable(target != -1)
@@ -119,7 +120,7 @@ def train():
 
         opt.zero_grad()
 
-        z_hat_bn, z, y_hat = model(data)
+        z_hat_bn, z, y_hat = model.forward2(data)
         C_denoise, C_forward = model.cost(z_hat_bn, z, y_hat, target, mask)
 
         loss = C_denoise + C_forward

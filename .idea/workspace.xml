@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7a4ae750-c774-47ef-a3e0-3ea67119f054" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ladder.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ladder_train.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ladder.py" afterPath="$PROJECT_DIR$/ladder.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ladder_train.py" afterPath="$PROJECT_DIR$/ladder_train.py" />
     </list>
     <ignored path="DeepLearningAssignments.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -72,8 +72,8 @@
       <file leaf-file-name="ladder.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/ladder.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1109">
-              <caret line="148" column="44" selection-start-line="148" selection-start-column="44" selection-end-line="148" selection-end-column="44" />
+            <state relative-caret-position="-766">
+              <caret line="143" column="0" selection-start-line="143" selection-start-column="0" selection-end-line="143" selection-end-column="0" />
               <folding>
                 <element signature="e#0#13#0" expanded="true" />
               </folding>
@@ -84,8 +84,8 @@
       <file leaf-file-name="ladder_train.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/ladder_train.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="268">
-              <caret line="179" column="18" selection-start-line="179" selection-start-column="18" selection-end-line="179" selection-end-column="18" />
+            <state relative-caret-position="628">
+              <caret line="86" column="23" selection-start-line="86" selection-start-column="23" selection-end-line="86" selection-end-column="23" />
               <folding>
                 <element signature="e#0#13#0" expanded="true" />
               </folding>
@@ -166,7 +166,7 @@
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="-34" />
+    <option name="x" value="92" />
     <option name="y" value="23" />
     <option name="width" value="1280" />
     <option name="height" value="712" />
@@ -225,24 +225,7 @@
     <property name="settings.editor.splitter.proportion" value="0.2" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../Music" />
   </component>
-  <component name="RunManager" selected="Python.vae_train4">
-    <configuration default="false" name="vae_train" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="DeepLearningAssignments" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/vae_train.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <method />
-    </configuration>
+  <component name="RunManager" selected="Python.ladder_train">
     <configuration default="false" name="vae" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -307,6 +290,23 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <module name="DeepLearningAssignments" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/vae_train4.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="ladder_train" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="DeepLearningAssignments" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/ladder_train.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <method />
@@ -446,19 +446,19 @@
       <method />
     </configuration>
     <list size="5">
-      <item index="0" class="java.lang.String" itemvalue="Python.vae_train" />
-      <item index="1" class="java.lang.String" itemvalue="Python.vae" />
-      <item index="2" class="java.lang.String" itemvalue="Python.vae_train2" />
-      <item index="3" class="java.lang.String" itemvalue="Python.vae_train3" />
-      <item index="4" class="java.lang.String" itemvalue="Python.vae_train4" />
+      <item index="0" class="java.lang.String" itemvalue="Python.vae" />
+      <item index="1" class="java.lang.String" itemvalue="Python.vae_train2" />
+      <item index="2" class="java.lang.String" itemvalue="Python.vae_train3" />
+      <item index="3" class="java.lang.String" itemvalue="Python.vae_train4" />
+      <item index="4" class="java.lang.String" itemvalue="Python.ladder_train" />
     </list>
     <recent_temporary>
       <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="Python.vae_train4" />
-        <item index="1" class="java.lang.String" itemvalue="Python.vae_train3" />
-        <item index="2" class="java.lang.String" itemvalue="Python.vae" />
-        <item index="3" class="java.lang.String" itemvalue="Python.vae_train2" />
-        <item index="4" class="java.lang.String" itemvalue="Python.vae_train" />
+        <item index="0" class="java.lang.String" itemvalue="Python.ladder_train" />
+        <item index="1" class="java.lang.String" itemvalue="Python.vae_train4" />
+        <item index="2" class="java.lang.String" itemvalue="Python.vae_train3" />
+        <item index="3" class="java.lang.String" itemvalue="Python.vae" />
+        <item index="4" class="java.lang.String" itemvalue="Python.vae_train2" />
       </list>
     </recent_temporary>
   </component>
@@ -479,7 +479,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-34" y="23" width="1280" height="712" extended-state="0" />
+    <frame x="92" y="23" width="1280" height="712" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -817,8 +817,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/ladder.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1109">
-          <caret line="148" column="44" selection-start-line="148" selection-start-column="44" selection-end-line="148" selection-end-column="44" />
+        <state relative-caret-position="-766">
+          <caret line="143" column="0" selection-start-line="143" selection-start-column="0" selection-end-line="143" selection-end-column="0" />
           <folding>
             <element signature="e#0#13#0" expanded="true" />
           </folding>
@@ -827,8 +827,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/ladder_train.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="268">
-          <caret line="179" column="18" selection-start-line="179" selection-start-column="18" selection-end-line="179" selection-end-column="18" />
+        <state relative-caret-position="628">
+          <caret line="86" column="23" selection-start-line="86" selection-start-column="23" selection-end-line="86" selection-end-column="23" />
           <folding>
             <element signature="e#0#13#0" expanded="true" />
           </folding>
