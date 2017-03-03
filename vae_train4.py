@@ -208,20 +208,19 @@ train_semi_sup()
 
 num_right = []
 
-'''
-for i in range(30):
+for i in range(10):
 
     # train_unsup()
+    #train_sup()
+    train_semi_sup()
+    num_right.append(test())
 
-    train_sup()
-
-    if i > 20:
-        num_right.append(test())
+    #if i > 20:
+    #    num_right.append(test())
 
 print("AVERAGE TESTING ACCURACY:")
 print(np.array(num_right).mean())
 
 predict_test_data()
-'''
 
 
