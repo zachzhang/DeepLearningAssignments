@@ -26,7 +26,7 @@ train_loader_labeled = torch.utils.data.DataLoader(train_labeled, batch_size=64,
 val_loader = torch.utils.data.DataLoader(val_data, batch_size=64, shuffle=True)
 test_loader = torch.utils.data.DataLoader(test_data, batch_size=64, shuffle=False)
 
-model = LadderNet()
+model = LadderNet2()
 
 params = []
 
@@ -40,9 +40,9 @@ for i in range(len(model.modules)):
 
 denoising_params = [item for sublist in model.denoising_params for item in sublist]
 
-# params = list(model.parameters())  + model.beta + model.gamma + denoise_params
+#params = list(model.parameters())  + model.beta + model.gamma + denoise_params
 
-params += denoising_params
+params += denoising_params + model.beta + model.gamma
 
 opt = optim.Adam(params, lr=0.004)
 
@@ -74,7 +74,7 @@ def train_semi_sup():
 
         opt.zero_grad()
 
-        z_hat_bn, z, y_hat = model.forward2(data_sup)
+        z_hat_bn, z, y_hat = model.forward(data_sup)
 
         C_denoise, C_forward = model.cost(z_hat_bn, z, y_hat, target_sup)
 
@@ -86,7 +86,7 @@ def train_semi_sup():
 
         opt.zero_grad()
 
-        z_hat_bn, z, y_hat = model.forward2(data)
+        z_hat_bn, z, y_hat = model.forward(data)
         C_denoise, _ = model.cost(z_hat_bn, z, y_hat, target)
 
         unsup_loss = C_denoise
@@ -98,7 +98,7 @@ def train_semi_sup():
         avg_sup_cost += sup_loss.data[0]
         avg_unsup_cost += unsup_loss.data[0]
 
-    print("averge supervised loss: ", avg_sup_cost / len(train_loader_unlabeled), " averge unsupervised loss: ",
+        print("averge supervised loss: ", avg_sup_cost / len(train_loader_unlabeled), " averge unsupervised loss: ",
           avg_unsup_cost / len(train_loader_unlabeled))
 
 
